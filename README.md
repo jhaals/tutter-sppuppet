@@ -11,8 +11,11 @@ desired amount of +1's(configurable)
 
 A pull request will be blocked if it has a _-1_ comment
 
+## Installation
 
-### tutter.yaml sppuppet specific settings
+    gem install tutter-sppuppet
+
+sppuppet specific settings (goes into tutter.yaml)
 
     action: 'sppuppet'
     action_settings:
@@ -21,3 +24,4 @@ A pull request will be blocked if it has a _-1_ comment
 ### TODO
 * whitelist
 * blacklist
+* tests
