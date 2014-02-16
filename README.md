@@ -19,7 +19,8 @@ sppuppet specific settings (goes into tutter.yaml)
 
     action: 'sppuppet'
     action_settings:
-    plus_ones_required: 3
+      plus_ones_required: 3
+      debug: false
 
 ### TODO
 * whitelist
