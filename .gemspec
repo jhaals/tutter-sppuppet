@@ -13,4 +13,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.required_ruby_version = '>= 1.8.7'
+  
+  s.add_runtime_dependency 'tutter'
 end
