@@ -1,11 +1,11 @@
 class Sppuppet
 
-  def initialize(settings, client, project, data)
+  def initialize(settings, client, project, data, event)
     @settings = settings
     @client = client
     @project = project
     @data = data
-    @debug = settings['debug'] unless settings['debug'].nil?
+    @event = event
   end
 
   def debug(message)
@@ -14,24 +14,21 @@ class Sppuppet
 
   def run
     pull_request_id = @data['issue']['number']
-    debug "pull request id: #{pull_request_id}"
     pr = @client.pull_request @project, pull_request_id
     plus_one = {}
     merge = false
 
     if pr.mergeable_state != 'clean'
-      debug "merge state for #{@project} #{pull_request_id} is not clean. Current state: #{pr.mergeable_state}"
-      return false
+      return 200, "merge state for #{@project} #{pull_request_id} is not clean. Current state: #{pr.mergeable_state}"
     end
 
     # No comments, no need to go further.
     if pr.comments == 0
-      debug 'no comments, skipping'
-      return false
+      return 200, 'no comments, skipping'
     end
 
     # Don't care about code we can't merge
-    return false unless pr.mergeable
+    return 200, 'merge state not clean' unless pr.mergeable
 
     # We fetch the latest commit and it's date.
     last_commit = @client.pull_request_commits(@project, pull_request_id).last
@@ -55,16 +52,19 @@ class Sppuppet
       # TODO it should calculate the +1's - the -1's
       # Never merge if someone says -1
       if /^(\-1|:\-1:)/.match i.body
-        debug "#{@project} #{pull_request_id} has a -1. I will not take the blame"
-        return false
+        return 200, "#{@project} #{pull_request_id} has a -1. I will not take the blame"
       end
     end
 
     merge = true if comments.last.body == '!merge'
 
     if plus_one.count >= @settings['plus_ones_required'] and merge
-      debug "merging #{pull_request_id} #{@project}"
       @client.merge_pull_request(@project, pull_request_id, 'SHIPPING!!')
+      return 200, "merging #{pull_request_id} #{@project}"
+    elsif plus_one.count >= @settings['plus_ones_required']
+      return 200, "have enough +1, but no merge command"
+    else
+      return 200, "not enough +1, have #{plus_one.count} but need #{@settings['plus_ones_required']}"
     end
   end
 end
