@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'tutter-sppuppet'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.author      = 'Johan Haals'
   s.email       = ['johan.haals@gmail.com']
   s.homepage    = 'https://github.com/jhaals/tutter-sppuppet'
@@ -13,6 +13,6 @@ Gem::Specification.new do |s|
   s.require_paths = ['lib']
 
   s.required_ruby_version = '>= 1.8.7'
-  
+
   s.add_runtime_dependency 'tutter'
 end
