@@ -7,7 +7,7 @@ and merge code without having more then read access to the project.
 2. Someone thinks it looks good and adds a _+1_ comment
 3. Another person comment _+1_
 4. The pull request can be merged by commenting _!merge_ when it has the
-desired amount of +1's(configurable)
+desired amount of +1's(configurable, defaults to 1)
 
 A pull request will be blocked if it has a _-1_ comment
 
@@ -20,7 +20,8 @@ sppuppet specific settings (goes into tutter.yaml)
     action: 'sppuppet'
     action_settings:
       plus_ones_required: 3
-      debug: false
+      post_instructions: true
+      instructions: 'To merge, post 3 +1s and then !merge'
 
 ### TODO
 * whitelist
