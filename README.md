@@ -20,7 +20,8 @@ sppuppet specific settings (goes into tutter.yaml)
     action: 'sppuppet'
     action_settings:
       plus_ones_required: 3
-      debug: false
+      post_instructions: true
+      instructions: 'To merge, post 3 +1s and then !merge'
 
 ### TODO
 * whitelist
