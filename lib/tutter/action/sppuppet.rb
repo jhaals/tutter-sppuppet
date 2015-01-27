@@ -13,6 +13,22 @@ class Sppuppet
   end
 
   def run
+    # If a new pull request is opened, comment with instructions
+    if @data['action'] == 'opened' && @settings['post_instructions']
+      issue = @data['issue']['number']
+      comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment with saying _+1_ or _:+1:_. Then write _!merge_ to trigger the merging."
+      begin
+        @client.add_comment(@project, issue, comment)
+        return 200, "Commented!"
+      rescue Octokit::NotFound
+        return 404, "Octokit returned 404, this could be an issue with your access token"
+      rescue Octokit::Unauthorized
+        return 401, "Authorization to #{@project} failed, please verify your access token"
+      rescue Octokit::TooManyLoginAttempts
+        return 429, "Account for #{@project} has been temporary locked down due to to many failed login attempts"
+      end
+    end
+
     pull_request_id = @data['issue']['number']
     pr = @client.pull_request @project, pull_request_id
     plus_one = {}
