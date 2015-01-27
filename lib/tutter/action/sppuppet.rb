@@ -2,6 +2,7 @@ class Sppuppet
 
   def initialize(settings, client, project, data, event)
     @settings = settings
+    @settings['plus_ones_required'] ||= 1
     @client = client
     @project = project
     @data = data
