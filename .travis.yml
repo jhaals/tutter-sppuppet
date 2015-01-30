@@ -3,6 +3,7 @@ deploy:
   api_key:
     secure: lyrstQ+LJHg2zic7oD1xl/7nDAZIXthKh5l9CEhq1gIBCRMxf/lfsQusKNbWuImy+Mk0ovOeLaMPDRDdK9VRpgW3tReuY3hlJIURioHrZbXDks09Ul/B4dk2mpR3ax67/+5kSeEESMOKU31g6YFfVx8TrUioorqLpmKppwqrGFo=
   gem: tutter-sppuppet
+  gemspec: .gemspec
   on:
     tags: true
     repo: jhaals/tutter-sppuppet
