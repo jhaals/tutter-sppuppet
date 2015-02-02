@@ -30,6 +30,11 @@ class Sppuppet
       end
     end
 
+    if @data['action'] != 'created'
+      # Not a new comment, ignore
+      return 200, 'not a new comment, skipping'
+    end
+
     pull_request_id = @data['issue']['number']
     pr = @client.pull_request @project, pull_request_id
     plus_one = {}
