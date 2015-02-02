@@ -17,7 +17,7 @@ class Sppuppet
     # If a new pull request is opened, comment with instructions
     if @data['action'] == 'opened' && @settings['post_instructions']
       issue = @data['number']
-      comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment with saying _+1_ or _:+1:_. Then write _!merge_ to trigger the merging."
+      comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment with saying _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger the merging."
       begin
         @client.add_comment(@project, issue, comment)
         return 200, "Commented!"
@@ -78,7 +78,7 @@ class Sppuppet
       end
     end
 
-    merge = true if comments.last.body == '!merge'
+    merge = comments.last.body == '!merge' || comments.last.body == ':shipit:'
 
     if plus_one.count >= @settings['plus_ones_required'] and merge
       @client.merge_pull_request(@project, pull_request_id, 'SHIPPING!!')
