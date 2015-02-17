@@ -1,9 +1,9 @@
 # -*- encoding: utf-8 -*-
 Gem::Specification.new do |s|
   s.name        = 'tutter-sppuppet'
-  s.version     = '0.0.8'
-  s.author      = 'Johan Haals'
-  s.email       = ['johan.haals@gmail.com']
+  s.version     = '0.0.9'
+  s.author      = ['Johan Haals', 'Erik Dalén', 'Alexey Lapitsky']
+  s.email       = ['johan.haals@gmail.com', 'dalen@spotify.com', 'alexey@spotify.com']
   s.homepage    = 'https://github.com/jhaals/tutter-sppuppet'
   s.summary     = 'Github code review without collaborator access'
   s.description = 'This tutter action let non collaborators review and merge code without having more then read access to the project'
