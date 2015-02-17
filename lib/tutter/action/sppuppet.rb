@@ -1,8 +1,12 @@
+require 'fileutils'
+require 'json'
+
 class Sppuppet
 
   def initialize(settings, client, project, data, event)
     @settings = settings
     @settings['plus_ones_required'] ||= 1
+    @settings['reports_dir'] ||= '/var/lib/tutter/reports'
     @client = client
     @project = project
     @data = data
@@ -80,8 +84,22 @@ class Sppuppet
 
     merge = comments.last.body == '!merge' || comments.last.body == ':shipit:'
 
-    if plus_one.count >= @settings['plus_ones_required'] and merge
-      @client.merge_pull_request(@project, pull_request_id, 'SHIPPING!!')
+    if plus_one.count >= @settings['plus_ones_required'] && merge
+      merge_commit = @client.merge_pull_request(@project, pull_request_id, 'SHIPPING!!')
+      json = { url: pr.html_url,
+               title: pr.title,
+               author: pr.user.login,
+               merge_sha: merge_commit.sha,
+               head_sha: pr.head.sha,
+               tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
+               reviewers: plus_one.keys,
+               deployer: comments.last.user.login }
+      report_directory = "#{@settings['reports_dir']}/#{merge_commit.sha[0..1]}/#{merge_commit.sha[2..3]}"
+      report_path = "#{report_directory}/#{merge_commit.sha}.json"
+      if @settings['generate_reports']
+        FileUtils.mkdir_p report_directory
+        File.open(report_path, 'w') { |f| f.write(JSON.pretty_generate(json)) }
+      end
       return 200, "merging #{pull_request_id} #{@project}"
     elsif plus_one.count >= @settings['plus_ones_required']
       return 200, "have enough +1, but no merge command"
