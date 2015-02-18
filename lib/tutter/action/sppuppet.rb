@@ -89,6 +89,8 @@ class Sppuppet
       json = { url: pr.html_url,
                title: pr.title,
                author: pr.user.login,
+               description: pr.body,
+               commits: client.pull_request_commits(@project, pr.number).map { |c| { author: c.author.login, message: c.commit.message, sha: c.commit.tree.sha } },
                merge_sha: merge_commit.sha,
                head_sha: pr.head.sha,
                tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
