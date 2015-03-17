@@ -82,7 +82,7 @@ class Sppuppet
       end
     end
 
-    merge = (comments.last.body == '!merge' || comments.last.body == ':shipit:')
+    merge = (comments.last.body == '!merge' || comments.last.body.starts_with?(':shipit:'))
 
     if plus_one.count >= @settings['plus_ones_required'] && merge
       json = { url: pr.html_url,
