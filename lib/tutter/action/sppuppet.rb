@@ -85,7 +85,7 @@ class Sppuppet
     merge = (comments.last.body == '!merge' || comments.last.body.start_with?(':shipit:'))
 
     if plus_one.count >= @settings['plus_ones_required'] && merge
-      json = { url: pr.html_url,
+      json = { url: pr.url,
                title: pr.title,
                author: pr.user.login,
                description: pr.body,
@@ -94,7 +94,17 @@ class Sppuppet
                tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
                reviewers: plus_one.keys,
                deployer: comments.last.user.login }
-      json[:merge_sha] = @client.merge_pull_request(@project, pull_request_id, 'SHIPPING!!').sha
+      # TODO: Word wrap description
+      merge_msg <<MERGE_MSG
+Title: #{pr.title}
+Description: #{pr.body}
+Author: #{pr.author}
+Reviewers: #{plus_one.keys.join ', '}
+Deployer: #{comments.last.user.login}
+URL: #{pr.url}
+MERGE_MSG
+      merge = @client.merge_pull_request(@project, pull_request_id, merge_msg)
+      json[:merge_sha] = merge.sha
       report_directory = "#{@settings['reports_dir']}/#{merge_commit.sha[0..1]}/#{merge_commit.sha[2..3]}"
       report_path = "#{report_directory}/#{merge_commit.sha}.json"
       if @settings['generate_reports']
