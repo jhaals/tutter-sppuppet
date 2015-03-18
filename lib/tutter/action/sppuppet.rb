@@ -95,7 +95,7 @@ class Sppuppet
                reviewers: plus_one.keys,
                deployer: comments.last.user.login }
       # TODO: Word wrap description
-      merge_msg <<MERGE_MSG
+      merge_msg = <<MERGE_MSG
 Title: #{pr.title}
 Description: #{pr.body}
 Author: #{pr.author}
@@ -103,8 +103,8 @@ Reviewers: #{plus_one.keys.join ', '}
 Deployer: #{comments.last.user.login}
 URL: #{pr.url}
 MERGE_MSG
-      merge = @client.merge_pull_request(@project, pull_request_id, merge_msg)
-      json[:merge_sha] = merge.sha
+      merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
+      json[:merge_sha] = merge_commit.sha
       report_directory = "#{@settings['reports_dir']}/#{merge_commit.sha[0..1]}/#{merge_commit.sha[2..3]}"
       report_path = "#{report_directory}/#{merge_commit.sha}.json"
       if @settings['generate_reports']
