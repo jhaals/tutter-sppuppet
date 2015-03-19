@@ -31,7 +31,7 @@ class Sppuppet
       return 200, 'Not a merge comment' unless merge
 
       unless pr.mergeable_state == 'clean'
-        msg = "Merge state for #{@project} #{pull_request_id} is not clean. Current state: #{pr.mergeable_state}"
+        msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\nHave the tests finished running?"
         @client.add_comment(@project, pull_request_id, msg)
         return 200, msg
       end
