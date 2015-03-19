@@ -89,7 +89,7 @@ class Sppuppet
                title: pr.title,
                author: pr.user.login,
                description: pr.body,
-               commits: @client.pull_request_commits(@project, pr.number).map { |c| { author: c.author.login, message: c.commit.message, sha: c.commit.tree.sha } },
+               commits: @client.pull_request_commits(@project, pr.number).map { |c| { author: c.author, message: c.commit.message, sha: c.commit.tree.sha } },
                head_sha: pr.head.sha,
                tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
                reviewers: plus_one.keys,
