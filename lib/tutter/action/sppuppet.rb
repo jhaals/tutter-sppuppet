@@ -72,14 +72,14 @@ class Sppuppet
                commits: @client.pull_request_commits(@project, pr.number).map { |c| { author: c.author, message: c.commit.message, sha: c.commit.tree.sha } },
                head_sha: pr.head.sha,
                tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
-               reviewers: plus_one.keys,
+               reviewers: votes.keys,
                deployer: comments.last.user.login }
       # TODO: Word wrap description
       merge_msg = <<MERGE_MSG
 Title: #{pr.title}
 Description: #{pr.body}
 Author: #{pr.user.login}
-Reviewers: #{plus_one.keys.join ', '}
+Reviewers: #{votes.keys.join ', '}
 Deployer: #{comments.last.user.login}
 URL: #{pr.url}
 MERGE_MSG
