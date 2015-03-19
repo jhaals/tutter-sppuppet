@@ -13,10 +13,6 @@ class Sppuppet
     @event = event
   end
 
-  def debug(message)
-    puts message if @debug
-  end
-
   def run
     # If a new pull request is opened, comment with instructions
     if @data['action'] == 'opened' && @settings['post_instructions']
