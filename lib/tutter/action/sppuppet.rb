@@ -98,7 +98,7 @@ class Sppuppet
       merge_msg = <<MERGE_MSG
 Title: #{pr.title}
 Description: #{pr.body}
-Author: #{pr.author}
+Author: #{pr.user.login}
 Reviewers: #{plus_one.keys.join ', '}
 Deployer: #{comments.last.user.login}
 URL: #{pr.url}
