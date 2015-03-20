@@ -122,7 +122,8 @@ Author: #{pr.user.login}
 Reviewers: #{votes.keys.join ', '}
 Deployer: #{merger}
 URL: #{pr.url}
-Description: #{pr.body}
+
+#{pr.body}
 MERGE_MSG
     begin
       merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
