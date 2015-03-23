@@ -114,13 +114,13 @@ class Sppuppet
              head_sha: pr.head.sha,
              tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
              reviewers: votes.keys,
-             deployer: merger }
+             deployer: merger.login }
     # TODO: Word wrap description
     merge_msg = <<MERGE_MSG
 Title: #{pr.title}
 Author: #{pr.user.login}
 Reviewers: #{votes.keys.join ', '}
-Deployer: #{merger}
+Deployer: #{merger.login}
 URL: #{pr.url}
 
 #{pr.body}
