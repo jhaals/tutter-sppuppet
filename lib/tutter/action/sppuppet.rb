@@ -34,7 +34,7 @@ class Sppuppet
       return 200, 'Merge state not clean' unless @data['state'] == 'success'
       commit_sha = @data['commit']['sha']
       @client.pull_requests(@project).each do |pr|
-        return maybe_merge(pr.number,false) if pr.head.sha == commit_sha
+        return maybe_merge(pr.number, false) if pr.head.sha == commit_sha
       end
       return 200, "Found no pull requests matching #{commit_sha}"
 
@@ -57,7 +57,7 @@ class Sppuppet
     merger = nil
     pr = @client.pull_request @project, pull_request_id
 
-    unless pr.mergeable_state == 'clean' 
+    unless pr.mergeable_state == 'clean'
       msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\n"
       reassure = "I will try to merge this for you when the builds turn green\n" +
         'If your build fails or becomes stuck for some reason, just say \'rebuild\''
@@ -80,7 +80,7 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
-      if (i.body == '!merge' || i.body.start_with?(':shipit:'))
+      if i.body == '!merge' || i.body.start_with?(':shipit:')
         merger ||= i.attrs[:user]
         # Count as a +1 if it is not the author
         unless pr.user.login == i.attrs[:user].attrs[:login]
@@ -98,7 +98,7 @@ class Sppuppet
       end
     end
 
-    return 200, "No merge comment found" unless merger
+    return 200, 'No merge comment found' unless merger
 
     num_votes = votes.values.reduce(0) { |a, e| a + e }
     if num_votes < @settings['plus_ones_required']
