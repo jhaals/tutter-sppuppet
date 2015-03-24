@@ -81,7 +81,7 @@ class Sppuppet
       next if last_commit_date > i.created_at
 
       if i.body == '!merge' || i.body.start_with?(':shipit:')
-        merger ||= i.attrs[:user]
+        merger ||= i.attrs[:user].attrs[:login]
         # Count as a +1 if it is not the author
         unless pr.user.login == i.attrs[:user].attrs[:login]
           votes[i.attrs[:user].attrs[:login]] = 1
@@ -114,13 +114,13 @@ class Sppuppet
              head_sha: pr.head.sha,
              tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
              reviewers: votes.keys,
-             deployer: merger.login }
+             deployer: merger }
     # TODO: Word wrap description
     merge_msg = <<MERGE_MSG
 Title: #{pr.title}
 Author: #{pr.user.login}
 Reviewers: #{votes.keys.join ', '}
-Deployer: #{merger.login}
+Deployer: #{merger}
 URL: #{pr.url}
 
 #{pr.body}
