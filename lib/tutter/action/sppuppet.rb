@@ -23,7 +23,7 @@ class Sppuppet
 
       pull_request_id = @data['issue']['number']
 
-      merge_command = (@data['comment']['body'] == '!mergshe' ||
+      merge_command = (@data['comment']['body'] == '!merge' ||
         @data['comment']['body'].start_with?(':shipit:'))
 
       return 200, 'Not a merge comment' unless merge_command
