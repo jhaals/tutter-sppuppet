@@ -23,7 +23,7 @@ class Sppuppet
 
       pull_request_id = @data['issue']['number']
 
-      merge_command = (@data['comment']['body'] == '!merge' ||
+      merge_command = (@data['comment']['body'] == '!mergshe' ||
         @data['comment']['body'].start_with?(':shipit:'))
 
       return 200, 'Not a merge comment' unless merge_command
@@ -80,7 +80,7 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
-      if i.body == '!merge' || i.body.start_with?(':shipit:')
+      if i.body == '!merge' || i.body.start_with?(':shipit:') || i.body.start_with?(':ship:')
         merger ||= i.attrs[:user].attrs[:login]
         # Count as a +1 if it is not the author
         unless pr.user.login == i.attrs[:user].attrs[:login]
