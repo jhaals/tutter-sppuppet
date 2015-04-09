@@ -24,7 +24,7 @@ class Sppuppet
       pull_request_id = @data['issue']['number']
 
       merge_command = (@data['comment']['body'] == '!merge' ||
-        @data['comment']['body'].start_with?(':shipit:'))
+        @data['comment']['body'].include?(':shipit:'))
 
       return 200, 'Not a merge comment' unless merge_command
 
@@ -88,7 +88,7 @@ class Sppuppet
         end
       end
 
-      match = /^:?([+-])1:?/.match(i.body)
+      match = /.*:?([+-])1:?.*/.match(i.body)
       if match
         score = match[1] == '+' ? 1 : -1
         # pull request submitter cant +1
