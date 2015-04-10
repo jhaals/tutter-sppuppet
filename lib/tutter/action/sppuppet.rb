@@ -96,6 +96,12 @@ class Sppuppet
           votes[i.attrs[:user].attrs[:login]] = score
         end
       end
+
+      match = /^(:poop:|:hankey:|-2)/.match(i.body)
+      if match
+        msg = "Commit cannot be merged so long as a -2 comment appears in the PR."
+        return post_comment(pull_request_id, msg)
+      end
     end
 
     return 200, 'No merge comment found' unless merger
