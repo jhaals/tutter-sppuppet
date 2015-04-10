@@ -114,7 +114,7 @@ class Sppuppet
 
     json = { url: pr.url,
              title: pr.title,
-             author: pr.user.login,
+             opened_by: pr.user.login,
              description: pr.body,
              commits: @client.pull_request_commits(@project, pr.number).map { |c| { author: c.author, message: c.commit.message, sha: c.commit.tree.sha } },
              head_sha: pr.head.sha,
@@ -124,7 +124,7 @@ class Sppuppet
     # TODO: Word wrap description
     merge_msg = <<MERGE_MSG
 Title: #{pr.title}
-Author: #{pr.user.login}
+Opened by: #{pr.user.login}
 Reviewers: #{votes.keys.join ', '}
 Deployer: #{merger}
 URL: #{pr.url}
