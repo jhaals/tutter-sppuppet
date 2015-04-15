@@ -128,7 +128,7 @@ Opened by: #{pr.user.login}
 Reviewers: #{votes.keys.join ', '}
 Deployer: #{merger}
 URL: #{pr.url}
-Tests: #{json.tests.map { |s| [s.state, s.description, s.url].join(", ") }.join("\n ")}
+Tests: #{@client.combined_status(@project, pr.head.sha).statuses.map { |s| [s.state, s.description, s.target_url].join(", ") }.join("\n ")}
 
 #{pr.body}
 MERGE_MSG
