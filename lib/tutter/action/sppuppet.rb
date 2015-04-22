@@ -42,7 +42,7 @@ class Sppuppet
       # If a new pull request is opened, comment with instructions
       if @data['action'] == 'opened' && @settings['post_instructions']
         issue = @data['number']
-        comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment containing only _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger merging."
+        comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment containing only _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger merging. If your build fails or becomes stuck for some reason, just say _rebuild_."
         return post_comment(issue, comment)
       else
         return 200, 'Not posting instructions'
