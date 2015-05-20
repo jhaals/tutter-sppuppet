@@ -88,7 +88,7 @@ class Sppuppet
         end
       end
 
-      match = /^:?([+-])1:?/.match(i.body)
+      match = /^(:?([+-])1:?|LGTM)/.match(i.body)
       if match
         score = match[1] == '+' ? 1 : -1
         # pull request submitter cant +1
