@@ -138,6 +138,9 @@ Tests: #{@client.combined_status(@project, pr.head.sha).statuses.map { |s| [s.st
 
 #{pr.body}
 MERGE_MSG
+    if incident_merge_override
+      @client.add_labels_to_an_issue @project, pull_request_id, ['incident']
+    end
     begin
       merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
     rescue Octokit::MethodNotAllowed => e
