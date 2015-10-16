@@ -80,7 +80,7 @@ class Sppuppet
 
       match = /^(:?([+-])1:?|LGTM)/.match(i.body)
       if match
-        score = match[2] == '-' ? 1 : -1
+        score = match[2] == '-' ? -1 : 1
         # pull request submitter cant +1
         unless pr.user.login == i.attrs[:user].attrs[:login]
           votes[i.attrs[:user].attrs[:login]] = score
