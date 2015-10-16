@@ -55,18 +55,8 @@ class Sppuppet
   def maybe_merge(pull_request_id, merge_command)
     votes = {}
     merger = nil
+    incident_merge_override = false
     pr = @client.pull_request @project, pull_request_id
-
-    unless pr.mergeable_state == 'clean'
-      msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\n"
-      reassure = "I will try to merge this for you when the builds turn green\n" +
-        'If your build fails or becomes stuck for some reason, just say \'rebuild\''
-      if merge_command
-        return post_comment(pull_request_id, msg + reassure)
-      else
-        return 200, msg
-      end
-    end
 
     # We fetch the latest commit and it's date.
     last_commit = @client.pull_request_commits(@project, pull_request_id).last
@@ -102,12 +92,28 @@ class Sppuppet
         msg = "Commit cannot be merged so long as a -2 comment appears in the PR."
         return post_comment(pull_request_id, msg)
       end
+
+      if /jira.*INCIDENT/.match(i.body)
+        incident_merge_override = true
+      end
+    end
+
+    if pr.mergeable_state != 'clean' && !incident_merge_override
+      msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\n"
+      reassure = "I will try to merge this for you when the builds turn green\n" +
+        "If your build fails or becomes stuck for some reason, just say 'rebuild'\n" +
+        'If have an incident and want to skip the tests and the peer review, please post the link to the jira ticket.'
+      if merge_command
+        return post_comment(pull_request_id, msg + reassure)
+      else
+        return 200, msg
+      end
     end
 
     return 200, 'No merge comment found' unless merger
 
     num_votes = votes.values.reduce(0) { |a, e| a + e }
-    if num_votes < @settings['plus_ones_required']
+    if num_votes < @settings['plus_ones_required'] && !incident_merge_override
       msg = "Not enough plus ones. #{@settings['plus_ones_required']} required, and only have #{num_votes}"
       return post_comment(pull_request_id, msg)
     end
