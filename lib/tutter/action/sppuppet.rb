@@ -28,7 +28,7 @@ class Sppuppet
 
       return 200, 'Not a merge comment' unless merge_command
 
-      return maybe_merge(pull_request_id, true)
+      return maybe_merge(pull_request_id, true, @data['sender']['login'])
 
     when 'status'
       return 200, 'Merge state not clean' unless @data['state'] == 'success'
@@ -52,9 +52,8 @@ class Sppuppet
     end
   end
 
-  def maybe_merge(pull_request_id, merge_command)
+  def maybe_merge(pull_request_id, merge_command, merger = nil)
     votes = {}
-    merger = nil
     incident_merge_override = false
     pr = @client.pull_request @project, pull_request_id
 
