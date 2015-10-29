@@ -2,6 +2,12 @@ require 'fileutils'
 require 'json'
 
 class Sppuppet
+  # Match regexps
+  MERGE_COMMENT = /(:shipit:|:ship:|!merge)/
+  PLUS_VOTE = /(:+1:|^\+1|^LGTM)/
+  MINUS_VOTE = /(:-1:|^-1)/
+  BLOCK_VOTE = /^(:poop:|:hankey:|-2)/ # Blocks merge
+  INCIDENT = /jira.*INCIDENT/
 
   def initialize(settings, client, project, data, event)
     @settings = settings
@@ -23,8 +29,7 @@ class Sppuppet
 
       pull_request_id = @data['issue']['number']
 
-      merge_command = (@data['comment']['body'] == '!merge' ||
-        @data['comment']['body'].start_with?(':shipit:'))
+      merge_command = MERGE_COMMENT.match @data['comment']['body']
 
       return 200, 'Not a merge comment' unless merge_command
 
@@ -69,7 +74,7 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
-      if i.body == '!merge' || i.body.start_with?(':shipit:') || i.body.start_with?(':ship:')
+      if MERGE_COMMENT.match i.body
         merger ||= i.attrs[:user].attrs[:login]
         # Count as a +1 if it is not the author
         unless pr.user.login == i.attrs[:user].attrs[:login]
@@ -77,22 +82,20 @@ class Sppuppet
         end
       end
 
-      match = /^(:?([+-])1:?|LGTM)/.match(i.body)
-      if match
-        score = match[2] == '-' ? -1 : 1
-        # pull request submitter cant +1
-        unless pr.user.login == i.attrs[:user].attrs[:login]
-          votes[i.attrs[:user].attrs[:login]] = score
-        end
+      if PLUS_VOTE.match i.body && pr.user.login != i.attrs[:user].attrs[:login]
+        votes[i.attrs[:user].attrs[:login]] = 1
       end
 
-      match = /^(:poop:|:hankey:|-2)/.match(i.body)
-      if match
-        msg = "Commit cannot be merged so long as a -2 comment appears in the PR."
+      if MINUS_VOTE.match i.body && pr.user.login != i.attrs[:user].attrs[:login]
+        votes[i.attrs[:user].attrs[:login]] = -1
+      end
+
+      if BLOCK_VOTE.match i.body
+        msg = 'Commit cannot be merged so long as a -2 comment appears in the PR.'
         return post_comment(pull_request_id, msg)
       end
 
-      if /jira.*INCIDENT/.match(i.body)
+      if INCIDENT.match(i.body)
         incident_merge_override = true
       end
     end
