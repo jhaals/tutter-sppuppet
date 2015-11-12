@@ -23,8 +23,6 @@ sppuppet specific settings (goes into tutter.yaml)
       plus_ones_required: 3
       post_instructions: true
       instructions: 'To merge, post 3 +1s and then !merge'
-      generate_reports: true
-      reports_dir: '/var/lib/tutter/reports'
 
 ### TODO
 * whitelist

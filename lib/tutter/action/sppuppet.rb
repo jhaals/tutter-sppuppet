@@ -12,7 +12,6 @@ class Sppuppet
   def initialize(settings, client, project, data, event)
     @settings = settings
     @settings['plus_ones_required'] ||= 1
-    @settings['reports_dir'] ||= '/var/lib/tutter/reports'
     @client = client
     @project = project
     @data = data
@@ -120,15 +119,6 @@ class Sppuppet
       return post_comment(pull_request_id, msg)
     end
 
-    json = { url: pr.url,
-             title: pr.title,
-             opened_by: pr.user.login,
-             description: pr.body,
-             commits: @client.pull_request_commits(@project, pr.number).map { |c| { author: c.author, message: c.commit.message, sha: c.commit.tree.sha } },
-             head_sha: pr.head.sha,
-             tests: @client.combined_status(@project, pr.head.sha).statuses.map { |s| {state: s.state, url: s.target_url, description: s.description } },
-             reviewers: votes.keys,
-             deployer: merger }
     # TODO: Word wrap description
     merge_msg = <<MERGE_MSG
 Title: #{pr.title}
@@ -147,14 +137,6 @@ MERGE_MSG
       merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
     rescue Octokit::MethodNotAllowed => e
       return post_comment(pull_request_id, "Pull request not mergeable: #{e.message}")
-    end
-    puts merge_commit.inspect
-    json[:merge_sha] = merge_commit.sha
-    report_directory = "#{@settings['reports_dir']}/#{merge_commit.sha[0..1]}/#{merge_commit.sha[2..3]}"
-    report_path = "#{report_directory}/#{merge_commit.sha}.json"
-    if @settings['generate_reports']
-      FileUtils.mkdir_p report_directory
-      File.open(report_path, 'w') { |f| f.write(JSON.pretty_generate(json)) }
     end
     return 200, "merging #{pull_request_id} #{@project}"
   end
