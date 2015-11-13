@@ -28,7 +28,7 @@ class Sppuppet
 
       pull_request_id = @data['issue']['number']
 
-      merge_command = MERGE_COMMENT.match @data['comment']['body']
+      merge_command = MERGE_COMMENT.match(@data['comment']['body'])
 
       return 200, 'Not a merge comment' unless merge_command
 
@@ -73,7 +73,7 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
-      if MERGE_COMMENT.match i.body
+      if MERGE_COMMENT.match(i.body)
         merger ||= i.attrs[:user].attrs[:login]
         # Count as a +1 if it is not the author
         unless pr.user.login == i.attrs[:user].attrs[:login]
@@ -81,15 +81,15 @@ class Sppuppet
         end
       end
 
-      if PLUS_VOTE.match i.body && pr.user.login != i.attrs[:user].attrs[:login]
+      if PLUS_VOTE.match(i.body) && pr.user.login != i.attrs[:user].attrs[:login]
         votes[i.attrs[:user].attrs[:login]] = 1
       end
 
-      if MINUS_VOTE.match i.body && pr.user.login != i.attrs[:user].attrs[:login]
+      if MINUS_VOTE.match(i.body) && pr.user.login != i.attrs[:user].attrs[:login]
         votes[i.attrs[:user].attrs[:login]] = -1
       end
 
-      if BLOCK_VOTE.match i.body
+      if BLOCK_VOTE.match(i.body)
         msg = 'Commit cannot be merged so long as a -2 comment appears in the PR.'
         return post_comment(pull_request_id, msg)
       end
