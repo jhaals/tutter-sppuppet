@@ -73,6 +73,9 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
+      # Skip comments from tutter itself
+      next if i.attrs[:user].attrs[:login] != @client.user.login
+
       if MERGE_COMMENT.match(i.body)
         merger ||= i.attrs[:user].attrs[:login]
         # Count as a +1 if it is not the author
