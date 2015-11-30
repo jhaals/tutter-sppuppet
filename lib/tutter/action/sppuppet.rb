@@ -26,8 +26,11 @@ class Sppuppet
         return 200, 'not a new comment, skipping'
       end
 
-      pull_request_id = @data['issue']['number']
+      if @data['sender']['login'] == @client.user.login
+        return 200, 'Skipping own comment'
+      end
 
+      pull_request_id = @data['issue']['number']
       merge_command = MERGE_COMMENT.match(@data['comment']['body'])
 
       return 200, 'Not a merge comment' unless merge_command
