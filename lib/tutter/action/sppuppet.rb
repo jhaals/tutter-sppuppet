@@ -4,8 +4,8 @@ require 'json'
 class Sppuppet
   # Match regexps
   MERGE_COMMENT = /(:shipit:|:ship:|!merge)/
-  PLUS_VOTE = /(:?\+1:?|LGTM)/         # Match :+1:, +1, and LGTM
-  MINUS_VOTE = /(:?\-1:?)/             # Match :-1: and -1
+  PLUS_VOTE = /^(:?\+1:?|LGTM)/         # Match :+1:, +1, and LGTM
+  MINUS_VOTE = /^(:?\-1:?)/             # Match :-1: and -1
   BLOCK_VOTE = /^(:poop:|:hankey:|-2)/ # Blocks merge
   INCIDENT = /jira.*INCIDENT/
 
