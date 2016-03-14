@@ -12,6 +12,8 @@ class Sppuppet
   def initialize(settings, client, project, data, event)
     @settings = settings
     @settings['plus_ones_required'] ||= 1
+    @settings['owner_plus_ones_required'] ||= 0
+    @settings['owners'] ||= []
     @client = client
     @project = project
     @data = data
@@ -49,7 +51,12 @@ class Sppuppet
       # If a new pull request is opened, comment with instructions
       if @data['action'] == 'opened' && @settings['post_instructions']
         issue = @data['number']
-        comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter needs to write a comment containing only _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger merging."
+        if @settings['owner_plus_ones_required'] > 0
+          owners_required_text = " and at least #{@settings['owner_plus_ones_required']} of the owners "
+        else
+          owners_required_text = ""
+        end
+        comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter #{owners_required_text}needs to write a comment containing only _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger merging."
         return post_comment(issue, comment)
       else
         return 200, 'Not posting instructions'
@@ -60,6 +67,7 @@ class Sppuppet
   end
 
   def maybe_merge(pull_request_id, merge_command, merger = nil)
+    owner_votes = {}
     votes = {}
     incident_merge_override = false
     pr = @client.pull_request @project, pull_request_id
@@ -76,23 +84,33 @@ class Sppuppet
       # We only want to check newer comments
       next if last_commit_date > i.created_at
 
+      commenter = i.attrs[:user].attrs[:login]
       # Skip comments from tutter itself
-      next if i.attrs[:user].attrs[:login] == @client.user.login
+      next if commenter == @client.user.login
 
       if MERGE_COMMENT.match(i.body)
-        merger ||= i.attrs[:user].attrs[:login]
+        merger ||= commenter
         # Count as a +1 if it is not the author
-        unless pr.user.login == i.attrs[:user].attrs[:login]
-          votes[i.attrs[:user].attrs[:login]] = 1
+        unless pr.user.login == commenter
+          votes[commenter] = 1
+          if @settings['owners'].include?(commenter)
+            owner_votes[commenter] = 1
+          end
         end
       end
 
-      if PLUS_VOTE.match(i.body) && pr.user.login != i.attrs[:user].attrs[:login]
-        votes[i.attrs[:user].attrs[:login]] = 1
+      if PLUS_VOTE.match(i.body) && pr.user.login != commenter
+        votes[commenter] = 1
+        if @settings['owners'].include?(commenter)
+          owner_votes[commenter] = 1
+        end
       end
 
-      if MINUS_VOTE.match(i.body) && pr.user.login != i.attrs[:user].attrs[:login]
-        votes[i.attrs[:user].attrs[:login]] = -1
+      if MINUS_VOTE.match(i.body) && pr.user.login != commenter
+        votes[commenter] = -1
+        if @settings['owners'].include?(commenter)
+          owner_votes[commenter] = -1
+        end
       end
 
       if BLOCK_VOTE.match(i.body)
@@ -122,6 +140,12 @@ class Sppuppet
     num_votes = votes.values.reduce(0) { |a, e| a + e }
     if num_votes < @settings['plus_ones_required'] && !incident_merge_override
       msg = "Not enough plus ones. #{@settings['plus_ones_required']} required, and only have #{num_votes}"
+      return post_comment(pull_request_id, msg)
+    end
+
+    num_owner_votes = owner_votes.values.reduce(0) { |a, e| a + e }
+    if num_owner_votes < @settings['owner_plus_ones_required'] && !incident_merge_override
+      msg = "Not enough plus ones from owners. #{@settings['owner_plus_ones_required']} required, and only have #{num_owner_votes}"
       return post_comment(pull_request_id, msg)
     end
 
