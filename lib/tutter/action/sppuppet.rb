@@ -4,6 +4,7 @@ require 'json'
 class Sppuppet
   # Match regexps
   MERGE_COMMENT = /(:shipit:|:ship:|!merge)/
+  DELETE_BRANCH_COMMENT = /(:scissors:)/
   PLUS_VOTE = /^(:?\+1:?|LGTM)/         # Match :+1:, +1, and LGTM
   MINUS_VOTE = /^(:?\-1:?)/             # Match :-1: and -1
   BLOCK_VOTE = /^(:poop:|:hankey:|-2)/ # Blocks merge
@@ -99,6 +100,11 @@ class Sppuppet
         end
       end
 
+      if DELETE_BRANCH_COMMENT.match(i.body)
+        @settings['chop'] = 1
+        @settings['branch_to_delete'] = pr.head
+      end
+
       if PLUS_VOTE.match(i.body) && pr.user.login != commenter
         votes[commenter] = 1
         if @settings['owners'].include?(commenter)
@@ -165,6 +171,8 @@ MERGE_MSG
     end
     begin
       merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
+      # If a owner posted a chop comment and was successfully merged delete the branch ref
+      @client.delete_branch(@project, @settings['branch_to_delete']) if @settings['chop'] == 1
     rescue Octokit::MethodNotAllowed => e
       return post_comment(pull_request_id, "Pull request not mergeable: #{e.message}")
     end
