@@ -101,7 +101,7 @@ class Sppuppet
       end
 
       if DELETE_BRANCH_COMMENT.match(i.body)
-        @branch_to_delete = pr.head
+        @delete_branch = true
       end
 
       if PLUS_VOTE.match(i.body) && pr.user.login != commenter
@@ -171,7 +171,7 @@ MERGE_MSG
     begin
       merge_commit = @client.merge_pull_request(@project, pull_request_id, merge_msg)
       # If a owner posted a chop comment and was successfully merged delete the branch ref
-      @client.delete_branch(@project, @branch_to_delete) if @branch_to_delete
+      @client.delete_branch(pr.head.repo.full_name, pr.head.ref) if @delete_branch
     rescue Octokit::MethodNotAllowed => e
       return post_comment(pull_request_id, "Pull request not mergeable: #{e.message}")
     end
