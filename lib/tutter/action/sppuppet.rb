@@ -15,6 +15,7 @@ class Sppuppet
     @settings['plus_ones_required'] ||= 1
     @settings['owner_plus_ones_required'] ||= 0
     @settings['owners'] ||= []
+    @delete_branch = @settings['chop_on_merge'] ||= false
     @client = client
     @project = project
     @data = data
