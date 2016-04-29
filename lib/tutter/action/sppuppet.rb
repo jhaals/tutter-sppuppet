@@ -57,7 +57,12 @@ class Sppuppet
         else
           owners_required_text = ""
         end
-        comment = @settings['instructions'] || "To merge at least #{@settings['plus_ones_required']} person other than the submitter #{owners_required_text}needs to write a comment containing only _+1_ or :+1:. Then write _!merge_ or :shipit: to trigger merging."
+        instructions_text = "To merge at least #{@settings['plus_ones_required']} person other than " +
+        "the submitter #{owners_required_text}needs to write a comment containing only _+1_ or :+1:.\n" +
+        "Then write _!merge_ or :shipit: to trigger merging.\n" +
+        "Also write :scissors: and tutter will clean up by deleting your branch after merge."
+
+        comment = @settings['instructions'] ||  instructions_text
         return post_comment(issue, comment)
       else
         return 200, 'Not posting instructions'
