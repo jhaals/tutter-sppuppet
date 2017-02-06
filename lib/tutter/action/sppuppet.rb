@@ -3,11 +3,11 @@ require 'json'
 
 class Sppuppet
   # Match regexps
-  MERGE_COMMENT = /(:shipit:|:ship:|!merge)/
-  DELETE_BRANCH_COMMENT = /(:scissors:)/
-  PLUS_VOTE = /^(:?\+1:?|LGTM|\+2|:thumbsup:)/         # Match :+1:, +1, +2 and LGTM
-  MINUS_VOTE = /^(:?\-1:?|:thumbsdown:)/             # Match :-1: and -1
-  BLOCK_VOTE = /^(:poop:|:hankey:|-2)/ # Blocks merge
+  MERGE_COMMENT = /(:shipit:|:ship:|!merge|🚢)/
+  DELETE_BRANCH_COMMENT = /(:scissors:|✂️️)/
+  PLUS_VOTE = /^(:?\+1:?|LGTM|\+2|:thumbsup:|👍)/         # Match :+1:, +1, +2 and LGTM
+  MINUS_VOTE = /^(:?\-1:?|:thumbsdown:|👎)/             # Match :-1: and -1
+  BLOCK_VOTE = /^(:poop:|:hankey:|-2|💩)/ # Blocks merge
   INCIDENT = /jira.*INCIDENT/
 
   def initialize(settings, client, project, data, event)
