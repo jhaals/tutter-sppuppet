@@ -5,7 +5,7 @@ class Sppuppet
   # Match regexps
   MERGE_COMMENT = /(:shipit:|:ship:|!merge)/
   DELETE_BRANCH_COMMENT = /(:scissors:)/
-  PLUS_VOTE = /^(:?\+1:?|LGTM|\+2)/         # Match :+1:, +1, +2 and LGTM
+  PLUS_VOTE = /^(:?\+1:?|LGTM|\+2|:thumbsup:)/         # Match :+1:, +1, +2 and LGTM and :thumbsup:
   MINUS_VOTE = /^(:?\-1:?)/             # Match :-1: and -1
   BLOCK_VOTE = /^(:poop:|:hankey:|-2)/ # Blocks merge
   INCIDENT = /jira.*INCIDENT/
