@@ -138,7 +138,8 @@ class Sppuppet
       msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\n"
       reassure = "I will try to merge this for you when the builds turn green\n" +
         "If your build fails or becomes stuck for some reason, just say 'rebuild'\n" +
-        'If you have an incident and want to skip the tests or the peer review, please post the link to the jira ticket.'
+        "If you have an incident and want to skip the tests or the peer review, please post the link to the jira ticket.\n\n" +
+        'if the pr is already merged according to github, you can ignore this message'
       if merge_command
         return post_comment(pull_request_id, msg + reassure)
       else
