@@ -134,9 +134,9 @@ class Sppuppet
       end
     end
 
-    if pr.mergeable_state != 'clean' && !incident_merge_override
-      msg = "Merge state for is not clean. Current state: #{pr.mergeable_state}\n"
-      reassure = "I will try to merge this for you when the builds turn green\n" +
+    if pr.mergeable_state != 'clean' && pr.mergeable_state != 'has_hooks' && !incident_merge_override 
+      msg = "Merge state is not clean. Current state: #{pr.mergeable_state}\n"
+      reassure = "I will try to merge this for you when the build turn green\n" +
         "If your build fails or becomes stuck for some reason, just say 'rebuild'\n" +
         "If you have an incident and want to skip the tests or the peer review, please post the link to the jira ticket.\n\n" +
         'If the pr is already merged according to github, you can ignore this message.'
