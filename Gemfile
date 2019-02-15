@@ -7,7 +7,8 @@ group :development do
 end
 
 group :test do
+  gem 'json'
   gem 'rake'
   gem 'rspec'
-  gem 'json'
+  gem 'thin'
 end
